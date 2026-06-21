@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная - Блог программиста{% endblock %}
+
+{% block content %}
+    <h2>Список статей</h2>
+    {% if articles %}
+        <ul>
+        {% for article in articles %}
+            <li>
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.short_description }}</p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Статей пока нет</p>
+    {% endif %}
+{% endblock %}
