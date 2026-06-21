@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from .models import Article
-import datetime
+from .forms import ContactMessageForm
 
 def index(request):
     articles = Article.objects.all()
@@ -13,17 +14,14 @@ def article_detail(request, article_id):
 
 def contacts(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        message = request.POST.get('message')
-        
-        with open('messages.txt', 'a', encoding='utf-8') as f:
-            f.write(f'--- {datetime.datetime.now()} ---\n')
-            f.write(f'Имя: {name}\n')
-            f.write(f'Email: {email}\n')
-            f.write(f'Сообщение: {message}\n')
-            f.write('\n')
-        
-        return HttpResponse('Спасибо! Ваше сообщение отправлено.')
+        form = ContactMessageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('contacts_success'))
+    else:
+        form = ContactMessageForm()
     
-    return render(request, 'blog/contacts.html')
+    return render(request, 'blog/contacts.html', {'form': form})
+
+def contacts_success(request):
+    return render(request, 'blog/contacts_success.html')
